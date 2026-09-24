@@ -2,71 +2,157 @@
 
 ## Sammanfattning
 
-I det här projektet paketerade och distribuerade jag 7-Zip som en Win32-applikation via Microsoft Intune. Installationsfilen konverterades till `.intunewin`, laddades upp till Intune och konfigurerades med silent install/uninstall, requirements, detection rule och required assignment.
+I det här projektet paketerade och distribuerade jag **7-Zip 26.03 (x64)** som en Win32-applikation med Microsoft Intune. Projektet omfattade hela flödet från en vanlig `.exe`-installer till en automatiskt distribuerad och verifierad applikation på en Windows 11-endpoint.
 
 ## Mål
 
-Målet var att genomföra hela livscykeln för en klassisk Win32-app i Intune: från paketering av installationsfilen till automatisk distribution och verifierad installation på en Windows 11-endpoint.
+- Paketera en klassisk Windows-applikation till `.intunewin`.
+- Konfigurera silent installation och avinstallation.
+- Sätta arkitektur- och OS-krav.
+- Skapa en detection rule.
+- Distribuera appen som **Required**.
+- Använda samma Windows 11-filter som i övriga projekt.
+- Verifiera installationen både i Intune och på klienten.
 
-## Paketering
+## 1. Paketering
 
-Installationsfilen `7z2603-x64.exe` paketerades med Microsoft Win32 Content Prep Tool.
-
-![Intunewin package](./images/01-intunewin-package-created.png)
-
-Resultatet blev en `.intunewin`-fil som kunde laddas upp till Intune.
-
-## Appkonfiguration i Intune
-
-![App information and program](./images/02-app-information-program.png)
+Installationsfilen:
 
 ```text
-Install command:
-7z2603-x64.exe /S
-
-Uninstall command:
-"C:\Program Files\7-Zip\Uninstall.exe" /S
-
-Install behavior:
-System
+7z2603-x64.exe
 ```
 
-## Requirements, detection och assignment
+paketerades med **Microsoft Win32 Content Prep Tool** till:
 
-![Requirements detection assignment](./images/03-requirements-detection-assignment.png)
+```text
+7z2603-x64.intunewin
+```
 
-- Architecture: x64
-- Minimum OS: Windows 10 1607 eller senare
-- Detection: `C:\Program Files\7-Zip`
-- Assignment: Required till `Windows Devices` med `Windows 11 filter`
+Den färdiga `.intunewin`-filen användes som app package file i Intune.
 
-## Deployment-resultat
+## 2. App information och program
 
-![App overview installed](./images/04-app-overview-installed.png)
+Applikationen skapades i Intune som:
 
-## Device install status
+```text
+Name: 7-Zip 26.03 (x64)
+Publisher: Igor Pavlov
+Version: 26.03
+Install behavior: System
+```
 
-![Device install status](./images/05-device-install-status.png)
+### Install command
 
-CI3 rapporterar appversion `26.03` med status **Installed**.
+```cmd
+7z2603-x64.exe /S
+```
 
-## Verifiering på endpointen
+### Uninstall command
 
-![7-Zip installed on endpoint](./images/06-endpoint-7zip-installed.png)
+```cmd
+"C:\Program Files\7-Zip\Uninstall.exe" /S
+```
+
+Parametern `/S` används för silent installation/avinstallation så att deploymenten inte kräver att slutanvändaren klickar igenom en installationsguide.
+
+## 3. Requirements
+
+Applikationen begränsades till:
+
+- **Architecture:** x64
+- **Minimum OS:** Windows 10 1607 eller senare
+
+Det säkerställer att x64-installern endast erbjuds till kompatibla Windows-enheter.
+
+## 4. Detection rule
+
+Jag skapade en manuell file-based detection rule som kontrollerar att 7-Zip finns installerat under:
+
+```text
+C:\Program Files\7-Zip
+```
+
+Detection rules används av Intune för att avgöra om installationen faktiskt lyckades och om appen redan finns på enheten.
+
+## 5. Assignment
+
+Appen tilldelades som **Required** till:
+
+```text
+Group: Windows Devices
+Filter mode: Include
+Filter: Windows 11 filter
+```
+
+Det innebär att Intune automatiskt installerar appen på enheter som matchar tilldelningen, utan att användaren behöver installera den manuellt från Company Portal.
+
+## 6. Deployment monitoring
+
+Efter deployment visade appens Overview:
+
+```text
+Installed: 1
+Not installed: 0
+Failed: 0
+Install pending: 0
+Not applicable: 0
+```
+
+Under **Device install status** rapporterade klienten `CI3`:
+
+```text
+App version: 26.03
+Status: Installed
+```
+
+## 7. Verifiering på endpointen
+
+På Windows 11-klienten verifierades slutresultatet lokalt genom att **7-Zip File Manager** fanns installerad och tillgänglig i Start-menyn.
+
+Det bekräftar hela kedjan:
+
+```text
+EXE
+  ↓
+IntuneWinAppUtil
+  ↓
+.INTUNEWIN
+  ↓
+Microsoft Intune
+  ↓
+Required assignment
+  ↓
+Silent installation
+  ↓
+Detection rule
+  ↓
+Installed / verifierad på endpoint
+```
+
+## Skärmbilder och bevis
+
+Den samlade bilden nedan visar paketeringen, appkonfigurationen, requirements, detection rule, assignment, Intune-status och lokal verifiering på CI3.
+
+[Öppna bilden i full storlek](./images/evidence.webp)
+
+![Projekt 3 – Win32 Application Deployment, samlad dokumentation](./images/evidence.webp)
 
 ## Resultat
 
-Projektet visar ett komplett Win32-flöde: paketering, upload, silent installation, kravkontroll, detection, grupp-/filtertilldelning, deployment monitoring och lokal verifiering.
+Projektet resulterade i en fungerande Win32-deployment där 7-Zip paketerades, distribuerades automatiskt, identifierades med en detection rule och rapporterades som installerad i Intune. Installationens resultat verifierades även direkt på klienten.
 
 ## Kompetenser som demonstreras
 
 - Microsoft Win32 Content Prep Tool
 - `.intunewin` packaging
-- Win32 app management i Intune
+- Win32 app management i Microsoft Intune
 - Silent install och uninstall
-- x64/OS requirements
+- System-context deployment
+- Architecture och OS requirements
 - Detection rules
 - Required assignments
 - Intune assignment filters
-- Device install status
+- Device install monitoring
 - Endpoint-verifiering
+
+[← Tillbaka till portfolioöversikten](../README.md)
