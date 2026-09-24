@@ -2,60 +2,64 @@
 
 ## Sammanfattning
 
-I det här projektet konfigurerade jag en Windows 11-enhet med Windows Autopilot och Microsoft Intune. Målet var att genomföra hela provisioneringsflödet från registrerad hårdvara till en fullt hanterad och Microsoft Entra-joined klient.
+I det här projektet byggde och verifierade jag ett komplett användardrivet Windows Autopilot-flöde i en egen Microsoft 365-testmiljö. En Windows 11-enhet registrerades i Autopilot, fick en distributionsprofil, genomförde OOBE med organisationsinloggning och blev automatiskt ansluten till Microsoft Entra ID och hanterad av Microsoft Intune.
 
 ## Mål
 
-- Registrera enheten i Windows Autopilot.
-- Tilldela en användardriven Autopilot-profil.
-- Styra OOBE och Enrollment Status Page.
-- Genomföra Microsoft Entra Join.
-- Verifiera att enheten blev Intune-managed.
-- Kontrollera join-status lokalt med `dsregcmd /status`.
+- Registrera en Windows 11-enhet i Windows Autopilot.
+- Tilldela en **User-driven** Autopilot-profil.
+- Använda **Microsoft Entra join**.
+- Styra provisioneringen med **Enrollment Status Page (ESP)**.
+- Genomföra organisationsstyrd OOBE.
+- Registrera Windows Hello for Business.
+- Verifiera deploymenten både i Intune och lokalt på klienten.
 
-## Autopilot-profil
+## Genomförande
 
-![Autopilot profile](./images/01-autopilot-profile.png)
+### 1. Autopilot-profil
 
-## Enrollment Status Page
+Jag skapade en användardriven Autopilot-profil för Windows och tilldelade den till rätt enhetsgrupp. Profilen konfigurerades för Microsoft Entra join och standardanvändare.
 
-![Enrollment Status Page](./images/02-enrollment-status-page.png)
+### 2. Enrollment Status Page
 
-## Enhetsregistrering
+Enrollment Status Page användes för att hålla kvar användaren i provisioneringsflödet tills nödvändiga appar och profiler hade bearbetats. Det gav kontroll över enhetens setup innan användaren fick tillgång till skrivbordet.
 
-![Autopilot device registration](./images/03-autopilot-device-registration.png)
+### 3. Registrering av enheten
 
-## OOBE och organisationsinloggning
+Enheten registrerades i Windows Autopilot och kopplades till den tilldelade deployment-profilen. På så sätt kunde Autopilot identifiera enheten redan under OOBE.
 
-![OOBE organization sign-in](./images/04-oobe-organization-signin.png)
+### 4. OOBE och organisationsinloggning
 
-## Device setup
+Efter återställning till OOBE hämtade enheten organisationens Autopilot-konfiguration. Användaren möttes av organisationsstyrd inloggning i stället för ett vanligt privat Windows-flöde.
 
-![OOBE device setup](./images/05-oobe-device-setup.png)
+### 5. Provisionering och Windows Update
 
-## Uppdatering under provisionering
+Under device setup-fasen applicerade Intune tilldelade konfigurationer och Windows Update kördes som en del av provisioneringen.
 
-![Windows update during provisioning](./images/06-windows-update-during-provisioning.png)
+### 6. Windows Hello for Business
 
-## Windows Hello for Business
+Efter organisationsinloggningen registrerades Windows Hello for Business för användaren.
 
-![Windows Hello for Business](./images/07-windows-hello-for-business.png)
+## Verifiering
 
-## Deployment-resultat
+Efter deploymenten verifierade jag resultatet på flera nivåer:
 
-![Autopilot deployment report](./images/08-autopilot-deployment-report.png)
+- Autopilot deployment report visade lyckad deployment.
+- Enheten visades som hanterad i Microsoft Intune.
+- Enheten var företagsägd och compliant i testmiljön.
+- Lokal kontroll med `dsregcmd /status` bekräftade att enheten var Microsoft Entra joined.
 
-## Verifiering i Intune
+## Skärmbilder och bevis
 
-![Intune managed device](./images/09-intune-managed-device.png)
+Bilden nedan sammanställer de viktigaste stegen: Autopilot-profil, ESP, registrerad enhet, OOBE, device setup, Windows Update, Windows Hello, deployment report, Intune-status och lokal `dsregcmd`-verifiering.
 
-## Lokal verifiering
+[Öppna bilden i full storlek](./images/evidence.webp)
 
-![dsregcmd verification](./images/10-dsregcmd-verification.png)
+![Projekt 1 – Windows Autopilot, samlad dokumentation](./images/evidence.webp)
 
 ## Resultat
 
-Projektet visar ett komplett Autopilot-flöde från registrering och profil till OOBE, Entra Join, Intune management och lokal verifiering.
+Projektet resulterade i en Windows 11-enhet som provisionerades genom Windows Autopilot, anslöts till Microsoft Entra ID och hanterades automatiskt av Intune. Jag verifierade både den centrala Intune-statusen och den lokala enhetsidentiteten.
 
 ## Kompetenser som demonstreras
 
@@ -63,8 +67,12 @@ Projektet visar ett komplett Autopilot-flöde från registrering och profil till
 - Microsoft Intune
 - Microsoft Entra ID
 - User-driven deployment
+- Microsoft Entra join
 - Enrollment Status Page
-- OOBE
+- Windows OOBE
 - Windows Hello for Business
 - Device enrollment och management
-- Lokal felsökning/verifiering med `dsregcmd`
+- Deployment monitoring
+- Lokal verifiering med `dsregcmd`
+
+[← Tillbaka till portfolioöversikten](../README.md)
