@@ -9,9 +9,9 @@ I det här projektet paketerade och distribuerade jag **7-Zip 26.03 (x64)** som 
 - Paketera en klassisk Windows-applikation till `.intunewin`.
 - Konfigurera silent installation och avinstallation.
 - Sätta arkitektur- och OS-krav.
-- Skapa en detection rule.
+- Skapa en file-based detection rule.
 - Distribuera appen som **Required**.
-- Använda samma Windows 11-filter som i övriga projekt.
+- Använda Windows 11-filter för targeting.
 - Verifiera installationen både i Intune och på klienten.
 
 ## 1. Paketering
@@ -53,7 +53,7 @@ Install behavior: System
 "C:\Program Files\7-Zip\Uninstall.exe" /S
 ```
 
-Parametern `/S` används för silent installation/avinstallation så att deploymenten inte kräver att slutanvändaren klickar igenom en installationsguide.
+Parametern `/S` används för silent installation/avinstallation så att deploymenten inte kräver användarinteraktion.
 
 ## 3. Requirements
 
@@ -62,17 +62,18 @@ Applikationen begränsades till:
 - **Architecture:** x64
 - **Minimum OS:** Windows 10 1607 eller senare
 
-Det säkerställer att x64-installern endast erbjuds till kompatibla Windows-enheter.
-
 ## 4. Detection rule
 
-Jag skapade en manuell file-based detection rule som kontrollerar att 7-Zip finns installerat under:
+Jag skapade en manuell file-based detection rule:
 
 ```text
-C:\Program Files\7-Zip
+Path: C:\Program Files\7-Zip
+File: 7z.exe
+Detection method: File or folder exists
+32-bit app on 64-bit clients: No
 ```
 
-Detection rules används av Intune för att avgöra om installationen faktiskt lyckades och om appen redan finns på enheten.
+Intune använder regeln för att avgöra om installationen faktiskt finns på endpointen.
 
 ## 5. Assignment
 
@@ -84,7 +85,7 @@ Filter mode: Include
 Filter: Windows 11 filter
 ```
 
-Det innebär att Intune automatiskt installerar appen på enheter som matchar tilldelningen, utan att användaren behöver installera den manuellt från Company Portal.
+Det innebär att Intune automatiskt installerar appen på enheter som matchar tilldelningen.
 
 ## 6. Deployment monitoring
 
@@ -109,7 +110,7 @@ Status: Installed
 
 På Windows 11-klienten verifierades slutresultatet lokalt genom att **7-Zip File Manager** fanns installerad och tillgänglig i Start-menyn.
 
-Det bekräftar hela kedjan:
+Flödet blev:
 
 ```text
 EXE
@@ -120,7 +121,7 @@ IntuneWinAppUtil
   ↓
 Microsoft Intune
   ↓
-Required assignment
+Required assignment + Windows 11 filter
   ↓
 Silent installation
   ↓
@@ -149,7 +150,7 @@ Projektet resulterade i en fungerande Win32-deployment där 7-Zip paketerades, d
 - Silent install och uninstall
 - System-context deployment
 - Architecture och OS requirements
-- Detection rules
+- File-based detection rules
 - Required assignments
 - Intune assignment filters
 - Device install monitoring
