@@ -2,74 +2,113 @@
 
 ## Sammanfattning
 
-I det här projektet konfigurerade jag BitLocker och Windows LAPS via Microsoft Intune för Windows 11-enheter. Målet var att centralisera diskkryptering och lokal administratörshantering, tilldela konfigurationerna med grupp och filter samt verifiera att de fungerade på endpointen.
+I det här projektet konfigurerade jag två centrala säkerhetsfunktioner för Windows 11 via Microsoft Intune: **BitLocker** för diskkryptering och **Windows LAPS** för säker hantering av lokala administratörslösenord.
+
+Projektet omfattade policykonfiguration, grupp- och filtertilldelning, deployment monitoring samt verifiering både centralt i Intune och lokalt på endpointen.
 
 ## Mål
 
 - Kräva BitLocker-kryptering på Windows 11.
-- Konfigurera TPM/startup- och recovery-inställningar.
-- Distribuera policyn till rätt enheter.
+- Konfigurera TPM-, startup- och recovery-inställningar.
+- Rikta konfigurationen till Windows 11-enheter med ett Intune assignment filter.
 - Konfigurera Windows LAPS med backup till Microsoft Entra ID.
 - Skapa och hantera ett lokalt administratörskonto automatiskt.
-- Verifiera BitLocker och LAPS på klienten och i Intune.
+- Verifiera att BitLocker var aktiverat.
+- Verifiera att LAPS-lösenordet hade säkerhetskopierats och roterades.
 
-## Windows LAPS-konfiguration
+## Windows LAPS
 
-![LAPS configuration](./images/01-laps-configuration.png)
+### Konfiguration
 
-## BitLocker – grundinställningar
+Windows LAPS konfigurerades med backup av det lokala administratörslösenordet till **Microsoft Entra ID**.
 
-![BitLocker base settings](./images/02-bitlocker-base-settings.png)
+Jag använde **Automatic Account Management** för att skapa och hantera ett nytt lokalt administratörskonto:
 
-## BitLocker – OS drive / TPM
+```text
+Account name: WLapsAdmin
+Password age: 30 days
+Password length: 14
+Backup directory: Microsoft Entra ID
+```
 
-![BitLocker OS drive settings](./images/03-bitlocker-os-drive-settings.png)
+Kontot hanteras automatiskt av Windows LAPS och lösenordet roteras enligt policyn.
 
-## BitLocker – recovery
+### Verifiering
 
-![BitLocker recovery settings](./images/04-bitlocker-recovery-settings.png)
+I Intune verifierade jag att `WLapsAdmin` hade ett lagrat lösenord samt registrerade datum för senaste och nästa lösenordsrotation. Själva lösenordet visas inte i portfolion.
 
-## Deployment-status för BitLocker
+## BitLocker
 
-![BitLocker deployment status](./images/05-bitlocker-deployment-status.png)
+### Grundkonfiguration
 
-## Deployment-status för LAPS
+BitLocker-policyn konfigurerades för att kräva device encryption på Windows-klienten.
 
-![LAPS deployment status](./images/06-laps-deployment-status.png)
+### Operating System Drive
 
-## Windows 11 assignment filter
+Jag konfigurerade inställningar för operativsystemsenheten, bland annat:
 
-![Windows 11 assignment filter](./images/07-windows-11-assignment-filter.png)
+- TPM/startup-beteende
+- startup authentication
+- PIN-relaterade inställningar
+- recovery-konfiguration
+
+### Recovery
+
+Recovery-inställningarna användes för att styra hur BitLocker recovery-information hanteras i den testade konfigurationen.
+
+## Assignment och Windows 11-filter
+
+Både BitLocker- och LAPS-konfigurationerna tilldelades till gruppen **Windows Devices**.
+
+Ett Intune assignment filter användes för att rikta konfigurationerna mot Windows 11:
 
 ```text
 (device.operatingSystemVersion -ge 10.0.22000)
 ```
 
-## Fixed och removable drives
+Det visar hur en bred enhetsgrupp kan kombineras med ett dynamiskt filter för mer precis targeting.
 
-![Fixed and removable drive defaults](./images/08-fixed-removable-drive-defaults.png)
+## Deployment monitoring
 
-## Verifiering – BitLocker
+I Intune följde jag policyernas status efter deployment:
 
-![BitLocker enabled on endpoint](./images/09-bitlocker-enabled-endpoint.png)
+- BitLocker: **2 Succeeded, 0 Error, 0 Conflict**
+- LAPS: **Succeeded utan Error eller Conflict** i den verifierade deploymenten
 
-## Verifiering – Windows LAPS
+## Endpoint-verifiering
 
-![LAPS password verification](./images/10-laps-password-verification.png)
+På Windows-klienten verifierades att:
+
+```text
+C: BitLocker på
+```
+
+Det gav ett lokalt bevis på att krypteringen faktiskt var aktiv och inte bara att policyn hade skapats i portalen.
+
+## Skärmbilder och bevis
+
+Den samlade bilden nedan visar LAPS-konfigurationen, BitLocker-inställningar, deployment-status, Windows 11-filtret, lokal BitLocker-verifiering och LAPS-verifiering i Intune.
+
+[Öppna bilden i full storlek](./images/evidence.webp)
+
+![Projekt 2 – BitLocker och Windows LAPS, samlad dokumentation](./images/evidence.webp)
 
 ## Resultat
 
-Projektet visar central säkerhetskonfiguration med BitLocker och Windows LAPS, riktad deployment med assignment filter samt lokal och central verifiering.
+Projektet visar hur Intune kan användas för att centralt styra både diskkryptering och lokala administratörskonton. Konfigurationerna tilldelades selektivt till Windows 11-enheter, följdes upp i Intune och verifierades på endpointen.
 
 ## Kompetenser som demonstreras
 
-- BitLocker management via Intune
-- TPM/startup policy
-- Recovery configuration
+- BitLocker management via Microsoft Intune
+- TPM- och startup-konfiguration
+- BitLocker recovery settings
 - Windows LAPS
 - Automatic Account Management
 - Microsoft Entra ID password backup
 - Password rotation
-- Assignment filters
-- Policy deployment monitoring
+- Intune assignment filters
+- Policy assignment och monitoring
 - Endpoint-verifiering
+- Grundläggande felsökning av Intune/LAPS
+
+[← Tillbaka till portfolioöversikten](../README.md)
