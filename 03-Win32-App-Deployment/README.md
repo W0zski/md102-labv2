@@ -134,7 +134,7 @@ Installed / verifierad på endpoint
 
 Den samlade bilden nedan visar paketeringen, appkonfigurationen, requirements, detection rule, assignment, Intune-status och lokal verifiering på CI3.
 
-[Öppna bilden i full storlek](./images/evidence.webp)
+[Öppna bilden i full storlek](https://raw.githubusercontent.com/W0zski/md102-labv2/main/03-Win32-App-Deployment/images/evidence.webp)
 
 ![Projekt 3 – Win32 Application Deployment, samlad dokumentation](./images/evidence.webp)
 
