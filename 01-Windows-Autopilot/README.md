@@ -2,7 +2,7 @@
 
 ## Sammanfattning
 
-I det här projektet byggde och verifierade jag ett komplett användardrivet Windows Autopilot-flöde i en egen Microsoft 365-testmiljö. En Windows 11-enhet registrerades i Autopilot, fick en distributionsprofil, genomförde OOBE med organisationsinloggning och blev automatiskt ansluten till Microsoft Entra ID och hanterad av Microsoft Intune.
+I det här projektet byggde och verifierade jag ett komplett användardrivet Windows Autopilot-flöde i en egen Microsoft 365-testmiljö. En Windows 11-enhet registrerades med hardware hash, fick en distributionsprofil, genomförde OOBE med organisationsinloggning och blev automatiskt ansluten till Microsoft Entra ID och hanterad av Microsoft Intune.
 
 ## Mål
 
@@ -16,19 +16,19 @@ I det här projektet byggde och verifierade jag ett komplett användardrivet Win
 
 ## Genomförande
 
-### 1. Autopilot-profil
+### 1. Hardware hash och Autopilot-registrering
+
+Jag samlade in enhetens hardware hash och registrerade enheten i Windows Autopilot. Därefter kopplades enheten till rätt deployment-profil.
+
+### 2. Autopilot-profil
 
 Jag skapade en användardriven Autopilot-profil för Windows och tilldelade den till rätt enhetsgrupp. Profilen konfigurerades för Microsoft Entra join och standardanvändare.
 
-### 2. Enrollment Status Page
+### 3. Enrollment Status Page
 
 Enrollment Status Page användes för att hålla kvar användaren i provisioneringsflödet tills nödvändiga appar och profiler hade bearbetats. Det gav kontroll över enhetens setup innan användaren fick tillgång till skrivbordet.
 
-### 3. Registrering av enheten
-
-Enheten registrerades i Windows Autopilot och kopplades till den tilldelade deployment-profilen. På så sätt kunde Autopilot identifiera enheten redan under OOBE.
-
-### 4. OOBE och organisationsinloggning
+### 4. OOBE
 
 Efter återställning till OOBE hämtade enheten organisationens Autopilot-konfiguration. Användaren möttes av organisationsstyrd inloggning i stället för ett vanligt privat Windows-flöde.
 
@@ -64,6 +64,7 @@ Projektet resulterade i en Windows 11-enhet som provisionerades genom Windows Au
 ## Kompetenser som demonstreras
 
 - Windows Autopilot
+- Hardware hash-registrering
 - Microsoft Intune
 - Microsoft Entra ID
 - User-driven deployment
