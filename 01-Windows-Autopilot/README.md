@@ -53,7 +53,7 @@ Efter deploymenten verifierade jag resultatet på flera nivåer:
 
 Bilden nedan sammanställer de viktigaste stegen: Autopilot-profil, ESP, registrerad enhet, OOBE, device setup, Windows Update, Windows Hello, deployment report, Intune-status och lokal `dsregcmd`-verifiering.
 
-[Öppna bilden i full storlek](./images/evidence.webp)
+[Öppna bilden i full storlek](https://raw.githubusercontent.com/W0zski/md102-labv2/main/01-Windows-Autopilot/images/evidence.webp)
 
 ![Projekt 1 – Windows Autopilot, samlad dokumentation](./images/evidence.webp)
 
