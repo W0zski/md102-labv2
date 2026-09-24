@@ -4,7 +4,7 @@
 
 I det här projektet konfigurerade jag två centrala säkerhetsfunktioner för Windows 11 via Microsoft Intune: **BitLocker** för diskkryptering och **Windows LAPS** för säker hantering av lokala administratörslösenord.
 
-Projektet omfattade policykonfiguration, grupp- och filtertilldelning, deployment monitoring samt verifiering både centralt i Intune och lokalt på endpointen.
+Projektet omfattade policykonfiguration, grupp- och filtertilldelning, deployment monitoring, felsökning samt verifiering både centralt i Intune och lokalt på endpointen.
 
 ## Mål
 
@@ -32,6 +32,21 @@ Backup directory: Microsoft Entra ID
 ```
 
 Kontot hanteras automatiskt av Windows LAPS och lösenordet roteras enligt policyn.
+
+### Felsökning
+
+När LAPS inte skapade kontot som förväntat verifierade jag först deployment-status i Intune och gick sedan vidare till klientens logg:
+
+```text
+Event Viewer
+Applications and Services Logs
+Microsoft
+Windows
+LAPS
+Operational
+```
+
+Loggen visade LAPS-events som gjorde det möjligt att skilja på policydeployment och själva lösenordsbackupen. Efter korrigering kunde `WLapsAdmin` och lösenordsrotationen verifieras i Intune.
 
 ### Verifiering
 
@@ -95,7 +110,7 @@ Den samlade bilden nedan visar LAPS-konfigurationen, BitLocker-inställningar, d
 
 ## Resultat
 
-Projektet visar hur Intune kan användas för att centralt styra både diskkryptering och lokala administratörskonton. Konfigurationerna tilldelades selektivt till Windows 11-enheter, följdes upp i Intune och verifierades på endpointen.
+Projektet visar hur Intune kan användas för att centralt styra både diskkryptering och lokala administratörskonton. Konfigurationerna tilldelades selektivt till Windows 11-enheter, följdes upp i Intune, felsöktes med klientloggar och verifierades på endpointen.
 
 ## Kompetenser som demonstreras
 
@@ -108,7 +123,8 @@ Projektet visar hur Intune kan användas för att centralt styra både diskkrypt
 - Password rotation
 - Intune assignment filters
 - Policy assignment och monitoring
+- Event Viewer / LAPS Operational-logg
 - Endpoint-verifiering
-- Grundläggande felsökning av Intune/LAPS
+- Intune/LAPS-felsökning
 
 [← Tillbaka till portfolioöversikten](../README.md)
