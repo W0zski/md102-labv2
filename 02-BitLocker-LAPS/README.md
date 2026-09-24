@@ -104,7 +104,7 @@ Det gav ett lokalt bevis på att krypteringen faktiskt var aktiv och inte bara a
 
 Den samlade bilden nedan visar LAPS-konfigurationen, BitLocker-inställningar, deployment-status, Windows 11-filtret, lokal BitLocker-verifiering och LAPS-verifiering i Intune.
 
-[Öppna bilden i full storlek](./images/evidence.webp)
+[Öppna bilden i full storlek](https://raw.githubusercontent.com/W0zski/md102-labv2/main/02-BitLocker-LAPS/images/evidence.webp)
 
 ![Projekt 2 – BitLocker och Windows LAPS, samlad dokumentation](./images/evidence.webp)
 
